@@ -96,15 +96,12 @@ def depthFirstSearch(problem):
     localstack = Stack()
     tempList = problem.getSuccessors(problem.getStartState())
     for successor in tempList:
-        localstack.push(successor[0])
-
-    def recursiveDepth(problem, stack):
-
+        localstack.push(successor)
     
 
     print "\nNow printing stack"
-    while (not stack.isEmpty()):
-        print stack.pop()
+    while (not localstack.isEmpty()):
+        print localstack.pop()
     print "\nDone printing stack"
 
     print "Sucessor of successor(s):", problem.getSuccessors((5,4))
