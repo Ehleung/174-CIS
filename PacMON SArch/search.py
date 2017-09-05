@@ -79,11 +79,6 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    
-    # MAKE SURE THESE WORK FOR QUESTION 1
-    # python pacman.py -l tinyMaze -p SearchAgent
-    # python pacman.py -l mediumMaze -p SearchAgent
-    # python pacman.py -l bigMaze -z .5 -p SearchAgent
 
     from game import Directions
     s = Directions.SOUTH
@@ -110,35 +105,41 @@ def depthFirstSearch(problem):
     # Start with appending the steps to every node explored.
     # Don't worry about the backtracking yet - the nodes will handle it
     # Main key* Figure out how to track where to remove nodes (after backtracking)
+    # MAKE SURE THESE WORK FOR QUESTION 1
+    # python pacman.py -l tinyMaze -p SearchAgent
+    # python pacman.py -l mediumMaze -p SearchAgent
+    # python pacman.py -l bigMaze -z .5 -p SearchAgent
 
     print "\nNow printing stack"
     while (not stack.isEmpty()):
         #Pop the first item from the stack
         tempItem = stack.pop()
-
+        #Set that node to visited, since we are now evaluating it
+        visited.append(tempItem[0])
+        # steps.append(tempItem[1])
         #first check if the node is goal, if so - skip the other steps and quit
         if (problem.isGoalState(tempItem[0])):
             break
-        #Set that node to visited, since we are now evaluating it
-        if not(tempItem[0] in visited):
-            visited.append(tempItem[0])
-            steps.append(tempItem[1])
+        
+        # Get the successors of the current expanded node    
         tempList = (problem.getSuccessors(tempItem[0]))
         print tempList
-        if (tempList):
-            for successor in tempList:
-                if not(successor[0] in visited):
-                    stack.push(successor)
+
+        #boolean for checking if all successors are already visited
+        allVisited = True
+        for successor in tempList:
+            if not(successor[0] in visited):
+                allVisited = False
+                stack.push(successor)
+        if allVisited:
+            
+            
+
     print "\nDone printing stack"
 
     print "\nPrinting visited"
     for node in visited:
         print node
-
-    print "\nPrinting steps"
-    for node in steps:
-        print node
-    # print "Sucessor of successor(s):", problem.getSuccessors((5,4))
 
     return steps
     
