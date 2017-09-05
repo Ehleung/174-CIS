@@ -86,22 +86,23 @@ def depthFirstSearch(problem):
     e = Directions.EAST
     n = Directions.NORTH
     stop = Directions.STOP
+    reverse = Directions.REVERSE
 
     # If start state is the goal, stop and move nowhere
     if (problem.isGoalState(problem.getStartState())):
         return [stop]
 
-    from util import Stack
-    stack = Stack()
-    tempList = problem.getSuccessors(problem.getStartState())
-    for successor in tempList:
-        stack.push(successor)
-
     # Created a list of visited nodes
     visited = [problem.getStartState()]
     # Create a list of steps to take
-    steps = []
+    path = []
 
+    from util import Stack
+    stack = Stack()
+    for successor in problem.getSuccessors(problem.getStartState()):
+        stack.push((successor[0], path.append(successor[1])))
+
+    print path
     # Start with appending the steps to every node explored.
     # Don't worry about the backtracking yet - the nodes will handle it
     # Main key* Figure out how to track where to remove nodes (after backtracking)
@@ -109,44 +110,60 @@ def depthFirstSearch(problem):
     # python pacman.py -l tinyMaze -p SearchAgent
     # python pacman.py -l mediumMaze -p SearchAgent
     # python pacman.py -l bigMaze -z .5 -p SearchAgent
+    # python autograder.py -q q1
+    # print "\nNow printing stack"
 
-    print "\nNow printing stack"
     while (not stack.isEmpty()):
         #Pop the first item from the stack
-        tempItem = stack.pop()
-        #Set that node to visited, since we are now evaluating it
-        visited.append(tempItem[0])
-        # steps.append(tempItem[1])
-        #first check if the node is goal, if so - skip the other steps and quit
-        if (problem.isGoalState(tempItem[0])):
-            break
-        
-        # Get the successors of the current expanded node    
-        tempList = (problem.getSuccessors(tempItem[0]))
-        print tempList
+        currentPos, path = stack.pop()
 
-        #boolean for checking if all successors are already visited
-        allVisited = True
-        for successor in tempList:
+        print currentPos
+        print path
+        #Set that node to visited, since we are now evaluating it
+        visited.append(currentPos)
+        
+        
+        for successor in problem.getSuccessors(currentPos):
+            if (problem.isGoalState(successor[0])):
+                return path
             if not(successor[0] in visited):
-                allVisited = False
-                stack.push(successor)
-        if allVisited:
-            
-            
+                stack.push(successor[0], path.append(successor[1]))
+                #path.append(currentPos)
+        
+        
 
     print "\nDone printing stack"
 
-    print "\nPrinting visited"
-    for node in visited:
-        print node
+    print "\nPrinting path"
+    for step in path:
+        print step
 
-    return steps
+    return path
+    # return  [s, s, w, s, w, w, s, w]
     
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+    
+    from game import Directions
+    s = Directions.SOUTH
+    w = Directions.WEST
+    e = Directions.EAST
+    n = Directions.NORTH
+    stop = Directions.STOP
+
+    if (problem.isGoalState(problem.getStartState())):
+        return [stop]
+
+    from util import Queue
+    frontier = Queue()
+    path = []
+
+    while (not Queue.isEmpty()):
+        node = Queue.pop()
+        path.append(node[0])
+        # for successor in 
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
