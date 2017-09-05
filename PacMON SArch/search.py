@@ -11,7 +11,6 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
 """
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
@@ -59,7 +58,6 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
-
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -73,44 +71,72 @@ def tinyMazeSearch(problem):
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
-
     Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
+        goal. Make sure to implement a graph search algorithm.
     To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
+        understand the search problem that is being passed in:
     print "Start:", problem.getStartState()
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
-    # print "Start:", problem.getStartState()
-    # print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    # print "Start's successors:", problem.getSuccessors(problem.getStartState())
+    
+    # MAKE SURE THESE WORK FOR QUESTION 1
+    # python pacman.py -l tinyMaze -p SearchAgent
+    # python pacman.py -l mediumMaze -p SearchAgent
+    # python pacman.py -l bigMaze -z .5 -p SearchAgent
+
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
+    e = Directions.EAST
+    n = Directions.NORTH
+    stop = Directions.STOP
+
+    # If start state is the goal, stop and move nowhere
+    if (problem.isGoalState(problem.getStartState())):
+        return [stop]
 
     from util import Stack
-    localstack = Stack()
+    stack = Stack()
     tempList = problem.getSuccessors(problem.getStartState())
     for successor in tempList:
-        localstack.push(successor)
-    
+        stack.push(successor)
+
+    # Created a list of visited nodes
+    visited = [problem.getStartState()]
+    # Create a list of steps to take
+    steps = []
+
+    # Start with appending the steps to every node explored.
+    # Don't worry about the backtracking yet - the nodes will handle it
+    # Main key* Figure out how to track where to remove nodes (after backtracking)
 
     print "\nNow printing stack"
-    while (not localstack.isEmpty()):
-        print localstack.pop()
+    while (not stack.isEmpty()):
+        #Pop the first item from the stack
+        tempItem = stack.pop()
+
+        #first check if the node is goal, if so - skip the other steps and quit
+        if (problem.isGoalState(tempItem[0])):
+            break
+        #Set that node to visited, since we are now evaluating it
+        if not(tempItem[0] in visited):
+            visited.append(tempItem[0])
+        tempList = (problem.getSuccessors(tempItem[0]))
+        print tempList
+        if (tempList):
+            for successor in tempList:
+                if not(successor[0] in visited):
+                    stack.push(successor)
     print "\nDone printing stack"
 
-    print "Sucessor of successor(s):", problem.getSuccessors((5,4))
-    # e = Directions.EAST
-    # n = Directions.NORTH
+    print "\nPrinting visited"
+    for node in visited:
+        print node
+    # print "Sucessor of successor(s):", problem.getSuccessors((5,4))
 
-
-
-    # util.raiseNotDefined()
+    return steps
+    
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
