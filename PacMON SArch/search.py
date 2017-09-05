@@ -122,6 +122,7 @@ def depthFirstSearch(problem):
         #Set that node to visited, since we are now evaluating it
         if not(tempItem[0] in visited):
             visited.append(tempItem[0])
+            steps.append(tempItem[1])
         tempList = (problem.getSuccessors(tempItem[0]))
         print tempList
         if (tempList):
@@ -132,6 +133,10 @@ def depthFirstSearch(problem):
 
     print "\nPrinting visited"
     for node in visited:
+        print node
+
+    print "\nPrinting steps"
+    for node in steps:
         print node
     # print "Sucessor of successor(s):", problem.getSuccessors((5,4))
 
