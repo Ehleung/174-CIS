@@ -79,11 +79,6 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    
-    # MAKE SURE THESE WORK FOR QUESTION 1
-    # python pacman.py -l tinyMaze -p SearchAgent
-    # python pacman.py -l mediumMaze -p SearchAgent
-    # python pacman.py -l bigMaze -z .5 -p SearchAgent
 
     from game import Directions
     s = Directions.SOUTH
@@ -107,6 +102,10 @@ def depthFirstSearch(problem):
     # Create a list of steps to take
     steps = []
 
+    # MAKE SURE THESE WORK FOR QUESTION 1
+    # python pacman.py -l tinyMaze -p SearchAgent
+    # python pacman.py -l mediumMaze -p SearchAgent
+    # python pacman.py -l bigMaze -z .5 -p SearchAgent
     # Start with appending the steps to every node explored.
     # Don't worry about the backtracking yet - the nodes will handle it
     # Main key* Figure out how to track where to remove nodes (after backtracking)
