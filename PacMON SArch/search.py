@@ -95,50 +95,55 @@ def depthFirstSearch(problem):
     # Created a list of visited nodes
     visited = [problem.getStartState()]
     # Create a list of steps to take
-    path = []
+    # path = []
 
     from util import Stack
     stack = Stack()
     for successor in problem.getSuccessors(problem.getStartState()):
-        stack.push((successor[0], path.append(successor[1])))
+        newList = [successor[1]]
+        # print successor[0]
+        # print newList
+        stack.push((successor[0], newList))
 
-    print path
-    # Start with appending the steps to every node explored.
-    # Don't worry about the backtracking yet - the nodes will handle it
-    # Main key* Figure out how to track where to remove nodes (after backtracking)
-    # MAKE SURE THESE WORK FOR QUESTION 1
     # python pacman.py -l tinyMaze -p SearchAgent
     # python pacman.py -l mediumMaze -p SearchAgent
     # python pacman.py -l bigMaze -z .5 -p SearchAgent
     # python autograder.py -q q1
-    # print "\nNow printing stack"
+    """
+    . . . . .
+    . . . . .
+    . . . . .
+    . . . . .
+    . . . . .
+    """
 
+    print "\nNow printing stack"
     while (not stack.isEmpty()):
         #Pop the first item from the stack
-        currentPos, path = stack.pop()
+        (currentPos, path) = stack.pop()
+        # print "currentPos: ", currentPos, "\tPath: ", path
 
-        print currentPos
-        print path
         #Set that node to visited, since we are now evaluating it
         visited.append(currentPos)
-        
-        
-        for successor in problem.getSuccessors(currentPos):
-            if (problem.isGoalState(successor[0])):
-                return path
-            if not(successor[0] in visited):
-                stack.push(successor[0], path.append(successor[1]))
-                #path.append(currentPos)
-        
-        
 
+        if (problem.isGoalState(currentPos)):
+            return path
+
+        for successor in problem.getSuccessors(currentPos):
+            if not(successor[0] in visited):
+                newPath = path
+                print newPath
+                newPath.append(successor[1])
+                stack.push((successor[0], newPath))
+                #path.append(currentPos)
     print "\nDone printing stack"
 
     print "\nPrinting path"
     for step in path:
         print step
 
-    return path
+    util.raiseNotDefined()
+    # return path
     # return  [s, s, w, s, w, w, s, w]
     
 
