@@ -4,12 +4,16 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
+
+
+# ELLERY LEUNG
+# CSE 471 MW 9:40-10:55
+# 1207157168
 
 """
 In search.py, you will implement generic search algorithms which are called by
@@ -73,39 +77,23 @@ def depthFirstSearch(problem):
     Search the deepest nodes in the search tree first.
     Your search algorithm needs to return a list of actions that reaches the
         goal. Make sure to implement a graph search algorithm.
-    To get started, you might want to try some of these simple commands to
-        understand the search problem that is being passed in:
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    
     # MAKE SURE THESE WORK FOR QUESTION 1
     # python pacman.py -l tinyMaze -p SearchAgent
     # python pacman.py -l mediumMaze -p SearchAgent
     # python pacman.py -l bigMaze -z .5 -p SearchAgent
 
-    from game import Directions
-    s = Directions.SOUTH
-    w = Directions.WEST
-    e = Directions.EAST
-    n = Directions.NORTH
-    stop = Directions.STOP
-
     # If start state is the goal, stop and move nowhere
     if (problem.isGoalState(problem.getStartState())):
-        return [stop]
+        return ['Stop']
 
     from util import Stack
     stack = Stack()
-    for successor in problem.getSuccessors(problem.getStartState()):
-        newPath = [successor[1]]
-        stack.push((successor[0], newPath))
+    stack.push((problem.getStartState(), []))
 
     # Created a list of visited nodes
     visited = [problem.getStartState()]
 
-    print "\nNow printing stack"
     while (not stack.isEmpty()):
         #Pop the first item from the stack
         currentPos, currentPath = stack.pop()
@@ -114,24 +102,55 @@ def depthFirstSearch(problem):
         #first check if the node is goal, if so - skip the other steps and quit
         if (problem.isGoalState(currentPos)):
             return currentPath
-        #Set that node to visited, since we are now evaluating it
-        visited.append(currentPos)
+        # Set that node to visited, since we are now evaluating it
+        if (not currentPos in visited):
+            visited.append(currentPos)
             
+        # For every successor of the current node
         for successor in problem.getSuccessors(currentPos):
-            if not(successor[0] in visited):
-                newPath = list(currentPath)
-                newPath.append(successor[1])
-                stack.push((successor[0], newPath))
+            if not(successor[0] in visited):        # If the successor hasn't been visited before, add it to stack
+                newPath = list(currentPath)         # copy the current path
+                newPath.append(successor[1])        # add the new direction to the path
+                stack.push((successor[0], newPath)) # push onto the stack
                 # print "\nold path", currentPath
                 # print "new path", newPath
-    print "\nDone printing stack"
 
+    # Function not implemented; will never be reached assuming there is a goal state
     util.raiseNotDefined()
     
-
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+    # python pacman.py -l mediumMaze -p SearchAgent -a fn=bfs
+    # python pacman.py -l bigMaze -p SearchAgent -a fn=bfs -z .5
+    # python eightpuzzle.py
+
+    # If start state is the goal, stop and move nowhere
+    if (problem.isGoalState(problem.getStartState())):
+        return ['Stop']
+
+    from util import Queue
+    queue = Queue()
+    queue.push((problem.getStartState(), []))
+
+    # Created a list of visited nodes
+    visited = [problem.getStartState()]
+
+    while (not queue.isEmpty()):
+        #Pop the first item from the queue
+        currentPos, currentPath = queue.pop()
+
+        # if solution found, exit
+        if (problem.isGoalState(currentPos)):
+            return currentPath
+
+        # print "current pos: ", currentPos, "\tdirection taken to get here: ", currentPath        
+        for successor in problem.getSuccessors(currentPos): # For every successor of the current node
+            if not(successor[0] in visited):        # If the successor hasn't been visited before, add it to queue
+                visited.append(successor[0])        # Set that node to visited - place for successors, so that multiple nodes aren't expanded
+                newPath = list(currentPath)         # copy the current path
+                newPath.append(successor[1])        # add the new direction to the path
+                queue.push((successor[0], newPath)) # push onto the queue
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
