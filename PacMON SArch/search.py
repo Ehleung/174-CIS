@@ -98,49 +98,37 @@ def depthFirstSearch(problem):
 
     from util import Stack
     stack = Stack()
-    tempList = problem.getSuccessors(problem.getStartState())
-    for successor in tempList:
-        stack.push(successor)
+    for successor in problem.getSuccessors(problem.getStartState()):
+        newPath = [successor[1]]
+        stack.push((successor[0], newPath))
 
     # Created a list of visited nodes
     visited = [problem.getStartState()]
-    # Create a list of steps to take
-    steps = []
-
-    # Start with appending the steps to every node explored.
-    # Don't worry about the backtracking yet - the nodes will handle it
-    # Main key* Figure out how to track where to remove nodes (after backtracking)
 
     print "\nNow printing stack"
     while (not stack.isEmpty()):
         #Pop the first item from the stack
-        tempItem = stack.pop()
+        currentPos, currentPath = stack.pop()
 
         #first check if the node is goal, if so - skip the other steps and quit
-        if (problem.isGoalState(tempItem[0])):
-            break
+        if (problem.isGoalState(currentPos)):
+            return currentPath
         #Set that node to visited, since we are now evaluating it
-        if not(tempItem[0] in visited):
-            visited.append(tempItem[0])
-            steps.append(tempItem[1])
-        tempList = (problem.getSuccessors(tempItem[0]))
-        print tempList
-        if (tempList):
-            for successor in tempList:
-                if not(successor[0] in visited):
-                    stack.push(successor)
+        visited.append(currentPos)
+            
+        for successor in problem.getSuccessors(currentPos):
+            if not(successor[0] in visited):
+                newPath = currentPath
+                newPath.append(successor[1])
+
+                stack.push((successor[0], newPath))
     print "\nDone printing stack"
 
-    print "\nPrinting visited"
-    for node in visited:
-        print node
+    # print "\nPrinting visited"
+    # for node in visited:
+    #     print node
 
-    print "\nPrinting steps"
-    for node in steps:
-        print node
-    # print "Sucessor of successor(s):", problem.getSuccessors((5,4))
-
-    return steps
+    return 
     
 
 def breadthFirstSearch(problem):
