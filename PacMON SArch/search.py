@@ -110,6 +110,7 @@ def depthFirstSearch(problem):
         #Pop the first item from the stack
         currentPos, currentPath = stack.pop()
 
+        # print "current pos: ", currentPos, "\tdirection taken to get here: ", currentPath[-1]
         #first check if the node is goal, if so - skip the other steps and quit
         if (problem.isGoalState(currentPos)):
             return currentPath
@@ -118,17 +119,14 @@ def depthFirstSearch(problem):
             
         for successor in problem.getSuccessors(currentPos):
             if not(successor[0] in visited):
-                newPath = currentPath
+                newPath = list(currentPath)
                 newPath.append(successor[1])
-
                 stack.push((successor[0], newPath))
+                # print "\nold path", currentPath
+                # print "new path", newPath
     print "\nDone printing stack"
 
-    # print "\nPrinting visited"
-    # for node in visited:
-    #     print node
-
-    return 
+    util.raiseNotDefined()
     
 
 def breadthFirstSearch(problem):
