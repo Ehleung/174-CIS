@@ -78,7 +78,6 @@ def depthFirstSearch(problem):
     Your search algorithm needs to return a list of actions that reaches the
         goal. Make sure to implement a graph search algorithm.
     """
-<<<<<<< HEAD
 
     from game import Directions
     s = Directions.SOUTH
@@ -86,11 +85,11 @@ def depthFirstSearch(problem):
     e = Directions.EAST
     n = Directions.NORTH
     stop = Directions.STOP
-=======
+
     # python pacman.py -l tinyMaze -p SearchAgent --frameTime 0
     # python pacman.py -l mediumMaze -p SearchAgent --frameTime 0
     # python pacman.py -l bigMaze -z .5 -p SearchAgent --frameTime 0
->>>>>>> 641ec7489fb69c78aa453efbe930c5df64088bc1
+
 
     # If start state is the goal, stop and move nowhere
     if (problem.isGoalState(problem.getStartState())):
@@ -101,7 +100,6 @@ def depthFirstSearch(problem):
     stack.push((problem.getStartState(), []))
 
     # Created a list of visited nodes
-<<<<<<< HEAD
     visited = [problem.getStartState()]
     # Create a list of steps to take
     steps = []
