@@ -219,7 +219,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     queue.push((problem.getStartState(), [], 0), 0)
 
     # Created a list of visited nodes
-    visited = []
+    visited = set()
 
     while not queue.isEmpty():
         #Pop the first item from the queue
@@ -232,13 +232,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
         # If it hasn't been visited before, perform this:
         if (not currentPos in visited):
-            visited.append(currentPos)
+            visited.add(currentPos)
 
             for successor in problem.getSuccessors(currentPos): # For every successor of the current node
                 newPath = list(currentPath)                             # copy the current path
                 newPath.append(successor[1])                            # add the new direction to the path
-                newCost = currentCost + successor[2]                    # add the new cost (for clarity)
-                queue.push((successor[0], newPath, newCost), newCost)   # push into the queue
+                newCost = currentCost + successor[2]        # add the new cost (for clarity) + the heuristic value
+                queue.push((successor[0], newPath, newCost), newCost + heuristic(successor[0], problem))   # push into the queue
 
     # Function not implemented; will never be reached assuming there is a goal state
     util.raiseNotDefined()
