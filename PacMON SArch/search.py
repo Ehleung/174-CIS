@@ -4,12 +4,16 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
+
+
+# ELLERY LEUNG
+# CSE 471 MW 9:40-10:55
+# 1207157168
 
 """
 In search.py, you will implement generic search algorithms which are called by
@@ -73,12 +77,8 @@ def depthFirstSearch(problem):
     Search the deepest nodes in the search tree first.
     Your search algorithm needs to return a list of actions that reaches the
         goal. Make sure to implement a graph search algorithm.
-    To get started, you might want to try some of these simple commands to
-        understand the search problem that is being passed in:
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
+<<<<<<< HEAD
 
     from game import Directions
     s = Directions.SOUTH
@@ -86,18 +86,22 @@ def depthFirstSearch(problem):
     e = Directions.EAST
     n = Directions.NORTH
     stop = Directions.STOP
+=======
+    # python pacman.py -l tinyMaze -p SearchAgent --frameTime 0
+    # python pacman.py -l mediumMaze -p SearchAgent --frameTime 0
+    # python pacman.py -l bigMaze -z .5 -p SearchAgent --frameTime 0
+>>>>>>> 641ec7489fb69c78aa453efbe930c5df64088bc1
 
     # If start state is the goal, stop and move nowhere
     if (problem.isGoalState(problem.getStartState())):
-        return [stop]
+        return ['Stop']
 
     from util import Stack
     stack = Stack()
-    tempList = problem.getSuccessors(problem.getStartState())
-    for successor in tempList:
-        stack.push(successor)
+    stack.push((problem.getStartState(), []))
 
     # Created a list of visited nodes
+<<<<<<< HEAD
     visited = [problem.getStartState()]
     # Create a list of steps to take
     steps = []
@@ -109,50 +113,116 @@ def depthFirstSearch(problem):
     # Start with appending the steps to every node explored.
     # Don't worry about the backtracking yet - the nodes will handle it
     # Main key* Figure out how to track where to remove nodes (after backtracking)
+=======
+    # Set was chosen because after searching, sets have a much better iteration than lists
+    visited = set()
+>>>>>>> 641ec7489fb69c78aa453efbe930c5df64088bc1
 
-    print "\nNow printing stack"
     while (not stack.isEmpty()):
         #Pop the first item from the stack
-        tempItem = stack.pop()
+        currentPos, currentPath = stack.pop()
+        # print "current pos: ", currentPos, "\tdirection taken to get here: ", currentPath[-1]
 
         #first check if the node is goal, if so - skip the other steps and quit
-        if (problem.isGoalState(tempItem[0])):
-            break
-        #Set that node to visited, since we are now evaluating it
-        if not(tempItem[0] in visited):
-            visited.append(tempItem[0])
-            steps.append(tempItem[1])
-        tempList = (problem.getSuccessors(tempItem[0]))
-        print tempList
-        if (tempList):
-            for successor in tempList:
-                if not(successor[0] in visited):
-                    stack.push(successor)
-    print "\nDone printing stack"
+        if (problem.isGoalState(currentPos)):
+            for node in visited:
+                print node
+            return currentPath
+        
+        # If it hasn't been visited before, perform this:
+        if (not currentPos in visited):
+            visited.add(currentPos)      # Set that node to visited, since we are now evaluating it
+            
+            # For every successor of the current node
+            for successor in problem.getSuccessors(currentPos):
+                newPath = list(currentPath)         # copy the current path
+                newPath.append(successor[1])        # add the new direction to the path
+                stack.push((successor[0], newPath)) # push onto the stack
+                # print "\nold path", currentPath
+                # print "new path", newPath
 
-    print "\nPrinting visited"
-    for node in visited:
-        print node
-
-    print "\nPrinting steps"
-    for node in steps:
-        print node
-    # print "Sucessor of successor(s):", problem.getSuccessors((5,4))
-
-    return steps
+    # Function not implemented; will never be reached assuming there is a goal state
+    util.raiseNotDefined()
     
-
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+    # python pacman.py -l mediumMaze -p SearchAgent -a fn=bfs --frameTime 0
+    # python pacman.py -l bigMaze -p SearchAgent -a fn=bfs -z .5 --frameTime 0
+    # python eightpuzzle.py
+
+    # If start state is the goal, stop and move nowhere
+    if (problem.isGoalState(problem.getStartState())):
+        return ['Stop']
+
+    from util import Queue
+    queue = Queue()
+    queue.push((problem.getStartState(), []))
+    # Created a list of visited nodes
+    visited = set()
+
+    while (not queue.isEmpty()):
+        #Pop the first item from the queue
+        currentPos, currentPath = queue.pop()
+        # print "current pos: ", currentPos, "\tdirection taken to get here: ", currentPath
+
+        # if solution found, exit
+        if (problem.isGoalState(currentPos)):
+            return currentPath
+
+        # If it hasn't been visited before, perform this:
+        if (not currentPos in visited):
+            visited.add(currentPos)     # Set that node to visited - place for successors, so that multiple nodes aren't expanded
+
+            for successor in problem.getSuccessors(currentPos): # For every successor of the current node
+                newPath = list(currentPath)         # copy the current path
+                newPath.append(successor[1])        # add the new direction to the path
+                queue.push((successor[0], newPath)) # push onto the queue
+
+    # Function not implemented; will never be reached assuming there is a goal state
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
+    # python pacman.py -l mediumMaze -p SearchAgent -a fn=ucs --frameTime 0
+    # python pacman.py -l mediumDottedMaze -p StayEastSearchAgent --frameTime 0
+    #   Wow - cost of 1??
+    # python pacman.py -l mediumScaryMaze -p StayWestSearchAgent --frameTime 0
+    #   Wow - cost of 68719479864
+
+    # If start state is the goal, stop and move nowhere
+    if (problem.isGoalState(problem.getStartState())):
+        return ['Stop']
+
+    from util import PriorityQueue
+    queue = PriorityQueue()
+    queue.push((problem.getStartState(), [], 0), 0)
+
+    # Created a list of visited nodes
+    visited = set()
+
+    while not queue.isEmpty():
+        #Pop the first item from the queue
+        currentPos, currentPath, currentCost = queue.pop()
+        # print "current pos: ", currentPos, "\tdirection taken to get here: ", currentPath, "\t current cost: ", currentCost        
+
+        # if solution found, exit
+        if (problem.isGoalState(currentPos)):
+            return currentPath
+
+        # If it hasn't been visited before, perform this:
+        if (not currentPos in visited):
+            visited.add(currentPos)
+
+            for successor in problem.getSuccessors(currentPos): # For every successor of the current node
+                newPath = list(currentPath)                             # copy the current path
+                newPath.append(successor[1])                            # add the new direction to the path
+                newCost = currentCost + successor[2]                    # add the new cost (for clarity)
+                queue.push((successor[0], newPath, newCost), newCost)   # push into the queue
+
+    # Function not implemented; will never be reached assuming there is a goal state
     util.raiseNotDefined()
 
-def nullHeuristic(state, problem=None):
+def nullHeuristic(state, problem):
     """
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
@@ -161,9 +231,41 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic --frameTime 0
+    # python pacman.py -l mediumMaze -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic --frameTime 0
 
+    # If start state is the goal, stop and move nowhere
+    if (problem.isGoalState(problem.getStartState())):
+        return ['Stop']
+
+    from util import PriorityQueue
+    queue = PriorityQueue()
+    queue.push((problem.getStartState(), [], 0), 0)
+
+    # Created a list of visited nodes
+    visited = []
+
+    while not queue.isEmpty():
+        #Pop the first item from the queue
+        currentPos, currentPath, currentCost = queue.pop()
+        # print "current pos: ", currentPos, "\t current cost: ", currentCost        
+
+        # if solution found, exit
+        if (problem.isGoalState(currentPos)):
+            return currentPath
+
+        # If it hasn't been visited before, perform this:
+        if (not currentPos in visited):
+            visited.append(currentPos)
+
+            for successor in problem.getSuccessors(currentPos): # For every successor of the current node
+                newPath = list(currentPath)                             # copy the current path
+                newPath.append(successor[1])                            # add the new direction to the path
+                newCost = currentCost + successor[2]                    # add the new cost (for clarity)
+                queue.push((successor[0], newPath, newCost), newCost)   # push into the queue
+
+    # Function not implemented; will never be reached assuming there is a goal state
+    util.raiseNotDefined()
 
 # Abbreviations
 bfs = breadthFirstSearch
