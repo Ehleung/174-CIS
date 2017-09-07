@@ -150,12 +150,46 @@ def breadthFirstSearch(problem):
                 newPath = list(currentPath)         # copy the current path
                 newPath.append(successor[1])        # add the new direction to the path
                 queue.push((successor[0], newPath)) # push onto the queue
-
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
+    # python pacman.py -l mediumMaze -p SearchAgent -a fn=ucs
+    # python pacman.py -l mediumDottedMaze -p StayEastSearchAgent
+    # python pacman.py -l mediumScaryMaze -p StayWestSearchAgent
+
+    if (problem.isGoalState(problem.getStartState())):
+        return ['Stop']
+
+    from util import PriorityQueue
+    queue = PriorityQueue()
+    queue.push((problem.getStartState(), [], 0), 0)
+
+    # Created a list of visited nodes
+    visited = [problem.getStartState()]
+
+    while not queue.isEmpty():
+        #Pop the first item from the queue
+        currentPos, currentPath, currentCost = queue.pop()
+
+        visited.append(currentPos)
+        
+        # if solution found, exit
+        if (problem.isGoalState(currentPos)):
+            return currentPath
+
+        # print "current pos: ", currentPos, "\tdirection taken to get here: ", currentPath, "\t current cost: ", currentCost        
+        for successor in problem.getSuccessors(currentPos): # For every successor of the current node
+            if (not successor[0] in visited):        # If the successor hasn't been visited before, add it to queue
+            # or not successor[0] in 
+                visited.append(successor[0])        # Set that node to visited - place for successors, so that multiple nodes aren't expanded
+                newPath = list(currentPath)         # copy the current path
+                newPath.append(successor[1])        # add the new direction to the path
+                # print "\nnew line"
+                # print "successor: ", successor[0], newPath[-1], successor[2]
+                queue.push((successor[0], newPath, currentCost + successor[2]), currentCost + successor[2]) # push onto the queue
+                # queue.update()
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
