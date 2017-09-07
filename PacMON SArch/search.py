@@ -224,7 +224,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     while not queue.isEmpty():
         #Pop the first item from the queue
         currentPos, currentPath, currentCost = queue.pop()
-        print "current pos: ", currentPos, "\t current cost: ", currentCost        
+        # print "current pos: ", currentPos, "\t current cost: ", currentCost        
 
         # if solution found, exit
         if (problem.isGoalState(currentPos)):
