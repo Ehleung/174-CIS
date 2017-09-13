@@ -302,7 +302,7 @@ class CornersProblem(search.SearchProblem):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        isGoal = state if (state in self.corners)
+        # isGoal = state if (state in self.corners)
 
         # For display purposes only
         if isGoal and self.visualize:
