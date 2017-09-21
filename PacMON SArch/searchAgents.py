@@ -265,13 +265,20 @@ def euclideanHeuristic(position, problem, info={}):
 # This portion is incomplete.  Time to write code!  #
 #####################################################
 
+
+##########################################################################################################
+# ELLERY H LEUNG
+# 1207157168
+# CSE 471 PROJECT 1 PT 2
+##########################################################################################################
+
 class CornersProblem(search.SearchProblem):
     """
     This search problem finds paths through all four corners of a layout.
     You must select a suitable state space and successor function
     """
-    # python pacman.py -l tinyCorners -p SearchAgent -a fn=bfs,prob=CornersProblem
-    # python pacman.py -l mediumCorners -p SearchAgent -a fn=bfs,prob=CornersProblem
+    # python pacman.py -l tinyCorners -p SearchAgent -a fn=bfs,prob=CornersProblem --frameTime 0
+    # python pacman.py -l mediumCorners -p SearchAgent -a fn=bfs,prob=CornersProblem --frameTime 0
 
     def __init__(self, startingGameState):
         """
@@ -285,10 +292,8 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print 'Warning: no food in corner ' + str(corner)
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
-        
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
 
     def getStartState(self):
         """
@@ -320,7 +325,7 @@ class CornersProblem(search.SearchProblem):
         # Assign the state into local variables
         currentPos, one, two, three, four = state
 
-        if (one is True and two is True and three is True and four is True):
+        if (one and two and three and four):
             return True
         return False
 
@@ -352,13 +357,15 @@ class CornersProblem(search.SearchProblem):
                 nextState = (nextx, nexty)
                 # Depending on which match, overwrite the corresponding boolean associated with a corner
                 if (nextState == self.corners[0]):
-                    successors.append((nextState, True, two, three, four), action, 1)
+                    successors.append(((nextState, True, two, three, four), action, 1))
                 elif (nextState == self.corners[1]):
-                    successors.append((nextState, one, True, three, four), action, 1)
+                    successors.append(((nextState, one, True, three, four), action, 1))
                 elif (nextState == self.corners[2]):
-                    successors.append((nextState, one, two, True, four), action, 1)
+                    successors.append(((nextState, one, two, True, four), action, 1))
                 elif (nextState == self.corners[3]):
-                    successors.append((nextState, one, two, three, True), action, 1)
+                    successors.append(((nextState, one, two, three, True), action, 1))
+                else:    # else append without a corner state changing
+                    successors.append(((nextState, one, two, three, four), action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -376,8 +383,9 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
-
 def cornersHeuristic(state, problem):
+    # python pacman.py -l mediumCorners -p AStarCornersAgent -z 0.5 --frameTime 0
+    # ^ shortcut for ^ -p SearchAgent -a fn=aStarSearch,prob=CornersProblem,heuristic=cornersHeuristic --frameTime 0
     """
     A heuristic for the CornersProblem that you defined.
 
