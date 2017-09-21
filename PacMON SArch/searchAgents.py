@@ -11,7 +11,6 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
 """
 This file contains all of the agents that can be selected to control Pacman.  To
 select an agent, use the '-p' option when running pacman.py.  Arguments can be
@@ -274,7 +273,6 @@ class CornersProblem(search.SearchProblem):
     # python pacman.py -l tinyCorners -p SearchAgent -a fn=bfs,prob=CornersProblem
     # python pacman.py -l mediumCorners -p SearchAgent -a fn=bfs,prob=CornersProblem
 
-
     def __init__(self, startingGameState):
         """
         Stores the walls, pacman's starting position and corners.
@@ -287,7 +285,7 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print 'Warning: no food in corner ' + str(corner)
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
-        self.visualize = visualize
+        
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
@@ -296,51 +294,71 @@ class CornersProblem(search.SearchProblem):
         """
         Returns the start state (in your state space, not the full Pacman state space)
         """
-        return self.startingPosition
+        # Create a tuple to indicate the corners problem
+
+        # Initialize the corners, covers the case of a one-square maze (not really a maze, but hey)
+        one, two, three, four = False, False, False, False
+
+        if (self.startingPosition == self.corners[0]):
+            one = True
+        if (self.startingPosition == self.corners[1]):
+            two = True
+        if (self.startingPosition == self.corners[2]):
+            three = True
+        if (self.startingPosition == self.corners[3]):
+            four = True
+
+        return (self.startingPosition, one, two, three, four)
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        # isGoal = state if (state in self.corners)
+        # The search state can only return true if the goal is found
+        # In this case, this indicates all 4 corners are found.
 
-        # For display purposes only
-        if isGoal and self.visualize:
-            self._visitedlist.append(state)
-            import __main__
-            if '_display' in dir(__main__):
-                if 'drawExpandedCells' in dir(__main__._display): #@UndefinedVariable
-                    __main__._display.drawExpandedCells(self._visitedlist) #@UndefinedVariable
+        # Assign the state into local variables
+        currentPos, one, two, three, four = state
 
-        return isGoal
-
-
-
-
+        if (one is True and two is True and three is True and four is True):
+            return True
+        return False
 
         util.raiseNotDefined()
 
     def getSuccessors(self, state):
         """
         Returns successor states, the actions they require, and a cost of 1.
-
          As noted in search.py:
             For a given state, this should return a list of triples, (successor,
             action, stepCost), where 'successor' is a successor to the current
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            # Parse the first tuple (position) as x and y
+            currentPos, one, two, three, four = state
 
-            "*** YOUR CODE HERE ***"
+            # Hint given code snippet
+            x, y = currentPos[0], currentPos[1]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+
+            # If the next state is not a wall
+            if not hitsWall:
+                nextState = (nextx, nexty)
+                # Depending on which match, overwrite the corresponding boolean associated with a corner
+                if (nextState == self.corners[0]):
+                    successors.append((nextState, True, two, three, four), action, 1)
+                elif (nextState == self.corners[1]):
+                    successors.append((nextState, one, True, three, four), action, 1)
+                elif (nextState == self.corners[2]):
+                    successors.append((nextState, one, two, True, four), action, 1)
+                elif (nextState == self.corners[3]):
+                    successors.append((nextState, one, two, three, True), action, 1)
 
         self._expanded += 1 # DO NOT CHANGE
         return successors

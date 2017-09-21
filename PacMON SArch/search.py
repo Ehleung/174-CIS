@@ -116,9 +116,6 @@ def depthFirstSearch(problem):
                 stack.push((successor[0], newPath)) # push onto the stack
                 # print "\nold path", currentPath
                 # print "new path", newPath
-
-    # Function not implemented; will never be reached assuming there is a goal state
-    util.raiseNotDefined()
     
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
@@ -153,9 +150,6 @@ def breadthFirstSearch(problem):
                 newPath = list(currentPath)         # copy the current path
                 newPath.append(successor[1])        # add the new direction to the path
                 queue.push((successor[0], newPath)) # push onto the queue
-
-    # Function not implemented; will never be reached assuming there is a goal state
-    util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -194,9 +188,6 @@ def uniformCostSearch(problem):
                 newPath.append(successor[1])                            # add the new direction to the path
                 newCost = currentCost + successor[2]                    # add the new cost (for clarity)
                 queue.push((successor[0], newPath, newCost), newCost)   # push into the queue
-
-    # Function not implemented; will never be reached assuming there is a goal state
-    util.raiseNotDefined()
 
 def nullHeuristic(state, problem):
     """
@@ -239,9 +230,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 newPath.append(successor[1])                            # add the new direction to the path
                 newCost = currentCost + successor[2]        # add the new cost (for clarity) + the heuristic value
                 queue.push((successor[0], newPath, newCost), newCost + heuristic(successor[0], problem))   # push into the queue
-
-    # Function not implemented; will never be reached assuming there is a goal state
-    util.raiseNotDefined()
 
 # Abbreviations
 bfs = breadthFirstSearch
