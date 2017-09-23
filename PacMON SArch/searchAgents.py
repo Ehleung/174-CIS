@@ -402,17 +402,17 @@ def cornersHeuristic(state, problem):
         return 0
     else:
         ## Find the Manhattan distance for each corner. Return the lowest value.
-        manhattanDists = []
+        dists = []
         for corner in corners:
-            manhattanDistance = abs(currentPos[0] - corner[0]) + abs(currentPos[1] - corner[1])
-            manhattanDists.append(manhattanDistance)
+            distance = ((currentPos[0] - corner[0]) ** 2 + (currentPos[1] - corner[1]) ** 2) ** 0.5
+            dists.append(distance)
 
         # Set lowest as the first corner
-        lowest =  manhattanDists[0]
+        lowest =  dists[0]
         # Iterate through all other corners' manhattan distance, and return the lowest one.
         for i in range(1, 4):
-            if manhattanDists[i] < lowest:
-                lowest = manhattanDists[i]
+            if dists[i] < lowest:
+                lowest = dists[i]
         return lowest
 
     return 0 # Default to trivial solution
