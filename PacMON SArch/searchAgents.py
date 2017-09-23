@@ -261,11 +261,6 @@ def euclideanHeuristic(position, problem, info={}):
     xy2 = problem.goal
     return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
 
-#####################################################
-# This portion is incomplete.  Time to write code!  #
-#####################################################
-
-
 ##########################################################################################################
 # ELLERY H LEUNG
 # 1207157168
@@ -295,6 +290,20 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
 
+        # Initialize the solved corners as false - if there is no food, they are solved.
+        self.one, self.two, self.three, self.four = False, False, False, False
+        # if (not startingGameState.hasFood(*self.corners[0])):
+        #     self.one = True
+        # if (not startingGameState.hasFood(*self.corners[1])):
+        #     self.two = True
+        # if (not startingGameState.hasFood(*self.corners[2])):
+        #     self.three = True
+        # if (not startingGameState.hasFood(*self.corners[3])):
+        #     self.four = True
+
+        # print self.corners[0], self.corners[1], self.corners[2], self.corners[3]
+        # print self.one, self.two, self.three, self.four
+
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state space)
@@ -302,18 +311,18 @@ class CornersProblem(search.SearchProblem):
         # Create a tuple to indicate the corners problem
 
         # Initialize the corners, covers the case of a one-square maze (not really a maze, but hey)
-        one, two, three, four = False, False, False, False
 
         if (self.startingPosition == self.corners[0]):
-            one = True
+            self.one = True
         if (self.startingPosition == self.corners[1]):
-            two = True
+            self.two = True
         if (self.startingPosition == self.corners[2]):
-            three = True
+            self.three = True
         if (self.startingPosition == self.corners[3]):
-            four = True
+            self.four = True
 
-        return (self.startingPosition, one, two, three, four)
+        # print self.one, self.two, self.three, self.four
+        return (self.startingPosition, self.one, self.two, self.three, self.four)
 
     def isGoalState(self, state):
         """
@@ -327,9 +336,19 @@ class CornersProblem(search.SearchProblem):
 
         if (one and two and three and four):
             return True
+        elif (currentPos == self.corners[0]):
+            if (two and three and four):
+                return True
+        elif (currentPos == self.corners[1]):
+            if (one and three and four):
+                return True
+        elif (currentPos == self.corners[2]):
+            if (one and two and four):
+                return True
+        elif (currentPos == self.corners[3]):
+            if (one and two and three):
+                return True
         return False
-
-        util.raiseNotDefined()
 
     def getSuccessors(self, state):
         """
@@ -366,7 +385,7 @@ class CornersProblem(search.SearchProblem):
                     successors.append(((nextState, one, two, three, True), action, 1))
                 else:    # else append without a corner state changing
                     successors.append(((nextState, one, two, three, four), action, 1))
-
+                # print currentPos, one, two, three, four
         self._expanded += 1 # DO NOT CHANGE
         return successors
 
@@ -403,22 +422,22 @@ def cornersHeuristic(state, problem):
 
     currentPos, one, two, three, four = state
     
+    # If the current position is one of the corners, the heuristic value is 0.
     if currentPos in corners:
         return 0
     else:
         ## Find the Manhattan distance for each corner. Return the lowest value.
-        dists = []
+        manhattanDists = []
         for corner in corners:
-            distance = 0.5 ** currentPos[0]
-            
-            dists.append(distance)
+            manhattanDistance = abs(currentPos[0] - corner[0]) + abs(currentPos[1] - corner[1])
+            manhattanDists.append(manhattanDistance)
 
-        # Set temporary value lowest as the first corner
-        lowest =  dists[0]
+        # Set lowest as the first corner
+        lowest =  manhattanDists[0]
         # Iterate through all other corners' manhattan distance, and return the lowest one.
         for i in range(1, 4):
-            if dists[i] < lowest:
-                lowest = dists[i]
+            if manhattanDists[i] <= lowest:
+                lowest = manhattanDists[i]
         return lowest
 
     return 0 # Default to trivial solution
@@ -488,25 +507,20 @@ class AStarFoodSearchAgent(SearchAgent):
 def foodHeuristic(state, problem):
     """
     Your heuristic for the FoodSearchProblem goes here.
-
-    This heuristic must be consistent to ensure correctness.  First, try to come
+        This heuristic must be consistent to ensure correctness.  First, try to come
     up with an admissible heuristic; almost all admissible heuristics will be
     consistent as well.
-
-    If using A* ever finds a solution that is worse uniform cost search finds,
+        If using A* ever finds a solution that is worse uniform cost search finds,
     your heuristic is *not* consistent, and probably not admissible!  On the
     other hand, inadmissible or inconsistent heuristics may find optimal
     solutions, so be careful.
-
-    The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a Grid
+        The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a Grid
     (see game.py) of either True or False. You can call foodGrid.asList() to get
     a list of food coordinates instead.
-
-    If you want access to info like walls, capsules, etc., you can query the
+        If you want access to info like walls, capsules, etc., you can query the
     problem.  For example, problem.walls gives you a Grid of where the walls
     are.
-
-    If you want to *store* information to be reused in other calls to the
+        If you want to *store* information to be reused in other calls to the
     heuristic, there is a dictionary called problem.heuristicInfo that you can
     use. For example, if you only want to count the walls once and store that
     value, try: problem.heuristicInfo['wallCount'] = problem.walls.count()
@@ -514,7 +528,15 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
+    
+    # If there is no more food left, the goal state is reached - return h val of 0
+    if len(foodGrid.asList()) == 0:
+        return 0
+    else:
+        return 1
+
+    
+
     return 0
 
 class ClosestDotSearchAgent(SearchAgent):
