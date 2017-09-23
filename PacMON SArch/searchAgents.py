@@ -401,8 +401,6 @@ def cornersHeuristic(state, problem):
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     currentPos, one, two, three, four = state
     
     if currentPos in corners:
@@ -423,12 +421,6 @@ def cornersHeuristic(state, problem):
                 lowest = dists[i]
         return lowest
 
-=======
-    "*** YOUR CODE HERE ***"
->>>>>>> parent of 792c3fc... CORNER HEURISTIC: 1/3
-=======
-    "*** YOUR CODE HERE ***"
->>>>>>> parent of 792c3fc... CORNER HEURISTIC: 1/3
     return 0 # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
