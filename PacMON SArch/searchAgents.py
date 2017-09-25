@@ -290,19 +290,11 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
 
+        # Add startingGameState so mazeDistance can be called
+        self.startingGameState = startingGameState
+
         # Initialize the solved corners as false - if there is no food, they are solved.
         self.one, self.two, self.three, self.four = False, False, False, False
-        # if (not startingGameState.hasFood(*self.corners[0])):
-        #     self.one = True
-        # if (not startingGameState.hasFood(*self.corners[1])):
-        #     self.two = True
-        # if (not startingGameState.hasFood(*self.corners[2])):
-        #     self.three = True
-        # if (not startingGameState.hasFood(*self.corners[3])):
-        #     self.four = True
-
-        # print self.corners[0], self.corners[1], self.corners[2], self.corners[3]
-        # print self.one, self.two, self.three, self.four
 
     def getStartState(self):
         """
@@ -311,7 +303,6 @@ class CornersProblem(search.SearchProblem):
         # Create a tuple to indicate the corners problem
 
         # Initialize the corners, covers the case of a one-square maze (not really a maze, but hey)
-
         if (self.startingPosition == self.corners[0]):
             self.one = True
         if (self.startingPosition == self.corners[1]):
@@ -427,17 +418,16 @@ def cornersHeuristic(state, problem):
         return 0
     else:
         ## Find the Manhattan distance for each corner. Return the lowest value.
-        manhattanDists = []
+        dists = []
         for corner in corners:
-            manhattanDistance = abs(currentPos[0] - corner[0]) + abs(currentPos[1] - corner[1])
-            manhattanDists.append(manhattanDistance)
+            dists.append(mazeDistance(currentPos, corner, problem.startingGameState))
 
         # Set lowest as the first corner
-        lowest =  manhattanDists[0]
+        lowest = dists[0]
         # Iterate through all other corners' manhattan distance, and return the lowest one.
-        for i in range(1, 4):
-            if manhattanDists[i] <= lowest:
-                lowest = manhattanDists[i]
+        for dist in dists:
+            if dist <= lowest:
+                lowest = dist
         return lowest
 
     return 0 # Default to trivial solution
@@ -504,7 +494,16 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
 
+def manhattanDistance(xy1, xy2):
+    "Manhattan distance"
+    return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
+def euclideanDistance(xy1, xy2):
+    "The Euclidean distance"
+    return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+
 def foodHeuristic(state, problem):
+    # python pacman.py -l trickySearch -p AStarFoodSearchAgent
     """
     Your heuristic for the FoodSearchProblem goes here.
         This heuristic must be consistent to ensure correctness.  First, try to come
@@ -528,34 +527,25 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    
-    def manhattanDistance(xy1, xy2):
-        "Manhattan distance"
-        return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
-
-    def euclideanDistance(xy1, xy2):
-        "The Euclidean distance"
-        return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
 
     # If there is no more food left, the goal state is reached - return h val of 0
     if len(foodGrid.asList()) == 0:
         return 0
-    elif len(foodGrid.asList()) == 1:
-        return mazeDistance(position, foodGrid.asList()[0], problem.startingGameState)
+    # If there is 1 or more food pieces left, compare the distances 
     else:
-        lowest = -1
+        highest = -1
         for food in foodGrid.asList():
             # tempDist = min(manhattanDistance(position, food), euclideanDistance(position, food))
             tempDist = mazeDistance(position, food, problem.startingGameState)
-            if lowest == -1:
-                lowest = tempDist
+            if highest == -1:
+                highest = tempDist
             else:
-                if tempDist < lowest:
-                    lowest = tempDist
-        if lowest < 0:
+                if tempDist > highest:
+                    highest = tempDist
+        if highest < 0:
             return 0
         else:
-            return lowest
+            return highest
     return 0
 
 class ClosestDotSearchAgent(SearchAgent):
