@@ -101,8 +101,6 @@ def depthFirstSearch(problem):
 
         #first check if the node is goal, if so - skip the other steps and quit
         if (problem.isGoalState(currentPos)):
-            for node in visited:
-                print node
             return currentPath
         
         # If it hasn't been visited before, perform this:

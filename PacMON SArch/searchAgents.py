@@ -529,14 +529,33 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     
+    def manhattanDistance(xy1, xy2):
+        "Manhattan distance"
+        return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
+    def euclideanDistance(xy1, xy2):
+        "The Euclidean distance"
+        return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+
     # If there is no more food left, the goal state is reached - return h val of 0
     if len(foodGrid.asList()) == 0:
         return 0
+    elif len(foodGrid.asList()) == 1:
+        return mazeDistance(position, foodGrid.asList()[0], problem.startingGameState)
     else:
-        return 1
-
-    
-
+        lowest = -1
+        for food in foodGrid.asList():
+            # tempDist = min(manhattanDistance(position, food), euclideanDistance(position, food))
+            tempDist = mazeDistance(position, food, problem.startingGameState)
+            if lowest == -1:
+                lowest = tempDist
+            else:
+                if tempDist < lowest:
+                    lowest = tempDist
+        if lowest < 0:
+            return 0
+        else:
+            return lowest
     return 0
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -561,14 +580,13 @@ class ClosestDotSearchAgent(SearchAgent):
         Returns a path (a list of actions) to the closest dot, starting from
         gameState.
         """
-        # Here are some useful elements of the startState
-        startPosition = gameState.getPacmanPosition()
-        food = gameState.getFood()
-        walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # import the required function
+        from search import aStarSearch
+
+        # We use A* Search because, if we consider each 'food' to be one of many goals, we find each dot appropriately.
+        return aStarSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -584,7 +602,6 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     You can use this search problem to help you fill in the findPathToClosestDot
     method.
     """
-
     def __init__(self, gameState):
         "Stores information from the gameState.  You don't need to change this."
         # Store the food for later reference
@@ -596,6 +613,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         self.costFn = lambda x: 1
         self._visited, self._visitedlist, self._expanded = {}, [], 0 # DO NOT CHANGE
 
+        self.numEaten = 0
+
     def isGoalState(self, state):
         """
         The state is Pacman's position. Fill this in with a goal test that will
@@ -603,8 +622,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x,y = state
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (x,y) in self.food.asList()
 
 def mazeDistance(point1, point2, gameState):
     """
