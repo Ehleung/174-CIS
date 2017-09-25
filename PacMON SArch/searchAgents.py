@@ -535,13 +535,17 @@ def foodHeuristic(state, problem):
     else:
         highest = -1
         for food in foodGrid.asList():
-            # tempDist = min(manhattanDistance(position, food), euclideanDistance(position, food))
+            # Call mazeDistance, which finds the distance between 2 points using BFS.
             tempDist = mazeDistance(position, food, problem.startingGameState)
+
+            # If not initialized, initialize it the first distance value.
             if highest == -1:
                 highest = tempDist
             else:
+                # If the new heuristic value is better, return it.
                 if tempDist > highest:
                     highest = tempDist
+        # If somehow the value remains -1, return 0 (heuristics cannot be negative)
         if highest < 0:
             return 0
         else:
@@ -603,8 +607,6 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         self.costFn = lambda x: 1
         self._visited, self._visitedlist, self._expanded = {}, [], 0 # DO NOT CHANGE
 
-        self.numEaten = 0
-
     def isGoalState(self, state):
         """
         The state is Pacman's position. Fill this in with a goal test that will
@@ -612,6 +614,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x,y = state
 
+        # Returns True if (x,y) is in the food list (means the current state is a goal)
+        # Returns False if the state is not in the list.
         return (x,y) in self.food.asList()
 
 def mazeDistance(point1, point2, gameState):
