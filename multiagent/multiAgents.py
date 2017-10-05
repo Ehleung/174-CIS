@@ -19,6 +19,11 @@ import random, util
 from game import Agent
 
 class ReflexAgent(Agent):
+
+    # python pacman.py -p ReflexAgent -l testClassic
+    # python pacman.py --frameTime 0 -p ReflexAgent -k 1
+    # python pacman.py --frameTime 0 -p ReflexAgent -k 2
+
     """
       A reflex agent chooses an action at each choice point by examining
       its alternatives via a state evaluation function.
@@ -27,8 +32,6 @@ class ReflexAgent(Agent):
       it in any way you see fit, so long as you don't touch our method
       headers.
     """
-
-
     def getAction(self, gameState):
         """
         You do not need to change this method, but you're welcome to.
@@ -74,7 +77,29 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        def euclideanDist(position, position2, info={}):
+            "The Euclidean distance"
+            xy1 = position
+            xy2 = position2
+            return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+
+        # If ghosts are scared, append the max time for a ghost
+        scared = max(newScaredTimes)
+        # print minScared
+
+        # Find the closest food        
+        closest = -1
+        for food in newFood.asList():
+          tempDist = euclideanDist(newPos, food)
+          if closest == -1:
+            closest = tempDist
+          elif tempDist < closest:
+            closest = tempDist
+        # Since closest is a min value, do 1/closest to get a more appropriate value
+        closest = 1.0 / closest
+          # print closest
+
+        return successorGameState.getScore() + scared + closest
 
 def scoreEvaluationFunction(currentGameState):
     """
