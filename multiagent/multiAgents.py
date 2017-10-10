@@ -76,16 +76,24 @@ class ReflexAgent(Agent):
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
-        "*** YOUR CODE HERE ***"
-        def euclideanDist(position, position2, info={}):
-            "The Euclidean distance"
-            xy1 = position
-            xy2 = position2
-            return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+        # Want to avoid stopping since it opens up opportunity for the ghost,
+        # and stopping is usually a bad option.
+        if action == 'Stop':
+          return -500
 
-        # If ghosts are scared, append the max time for a ghost
-        scared = max(newScaredTimes)
-        # print minScared
+        # Counter to keep track of the ghosts
+        ghostCounter = 0
+        while ghostCounter < len(newGhostStates):
+          ghost = newGhostStates[ghostCounter]
+          if (newPos == ghost.getPosition) and (newScaredTimes[ghostCounter] == 0):
+            return -500
+          ghostCounter += 1
+
+        def euclideanDist(position, position2, info={}):
+          "The Euclidean distance"
+          xy1 = position
+          xy2 = position2
+          return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
 
         # Find the closest food        
         closest = -1
@@ -97,9 +105,8 @@ class ReflexAgent(Agent):
             closest = tempDist
         # Since closest is a min value, do 1/closest to get a more appropriate value
         closest = 1.0 / closest
-          # print closest
 
-        return successorGameState.getScore() + scared + closest
+        return successorGameState.getScore() + closest
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -134,33 +141,77 @@ class MultiAgentSearchAgent(Agent):
 class MinimaxAgent(MultiAgentSearchAgent):
     """
       Your minimax agent (question 2)
+      python autograder.py -q q2
+      python autograder.py -q q2 --no-graphics
+      python pacman.py -p MinimaxAgent -l minimaxClassic -a depth=4
+      python pacman.py -p MinimaxAgent -l trappedClassic -a depth=3
     """
-
     def getAction(self, gameState):
         """
           Returns the minimax action from the current gameState using self.depth
           and self.evaluationFunction.
-
           Here are some method calls that might be useful when implementing minimax.
-
           gameState.getLegalActions(agentIndex):
             Returns a list of legal actions for an agent
             agentIndex=0 means Pacman, ghosts are >= 1
-
           gameState.generateSuccessor(agentIndex, action):
             Returns the successor game state after an agent takes an action
-
           gameState.getNumAgents():
             Returns the total number of agents in the game
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Recursive call of getVal
+        return self.getVal(gameState, 1, 0, gameState.getNumAgents())
+    
+    def getVal(self, gameState, depth, currAgent, totalAgents):
+      """
+      Returns the best value obtained from recursive calls of getVal
+      """
+      # If horizon is reached, stop searching
+      if depth > self.depth or gameState.isWin() or gameState.isLose():
+        return self.evaluationFunction(gameState)
+
+      # All agents have been iterated through, reset agents, increment depth
+      newAgent = currAgent + 1
+      if newAgent >= totalAgents:
+        newAgent = 0
+        depth += 1
+
+      # Get all possible legal moves of the current agent
+      legalMoves = []
+      for legalAction in gameState.getLegalActions(currAgent):
+        # Stopping is inoptimal, so do not perform these
+        if legalAction != 'Stop':
+          legalMoves.append(legalAction)
+
+      # Make a list of choices from recursively calling getVal, these are possible actions to make.
+      choices = []
+      for action in legalMoves:
+          choices.append(self.getVal(gameState.generateSuccessor(currAgent, action), depth, newAgent, totalAgents))
+
+      # Pacman is making the first move, this is done b/c of the choices skipping
+      if currAgent == 0 and depth == 1:
+        highest = max(choices)
+        # Make a list of the best possible choices and choose randomly
+        bestChoices = []
+        for i in range(len(choices)):
+          if choices[i] == highest:
+            bestChoices.append(i)
+        chosen = random.choice(bestChoices)
+        return legalMoves[chosen]
+        
+      # If pacman is moving (not first action), return highest evaluated option
+      elif currAgent == 0:
+        highest = max(choices)
+        return highest
+      # If other agent is moving, return lowest evaluated option
+      else:
+        lowest = min(choices)
+        return lowest
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
       Your minimax agent with alpha-beta pruning (question 3)
     """
-
     def getAction(self, gameState):
         """
           Returns the minimax action using self.depth and self.evaluationFunction
