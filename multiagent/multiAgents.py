@@ -217,6 +217,15 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+
+
+        def maxValue(self, gameState, alpha, beta):
+        	v = -10000
+
+        def minValue(self, gameState, alpha, beta):
+        	v = -10000
+
+        
         util.raiseNotDefined()
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
