@@ -14,7 +14,7 @@
 
 from util import manhattanDistance
 from game import Directions
-import random, util
+import random, util, sys
 
 from game import Agent
 
@@ -186,9 +186,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
       # Make a list of choices from recursively calling getVal, these are possible actions to make.
       choices = []
       for action in legalMoves:
-          choices.append(self.getVal(gameState.generateSuccessor(currAgent, action), depth, newAgent, totalAgents))
+          choices.append(self.getVal(gameState.generateSuccessor(currAgent, action), 
+            depth, newAgent, totalAgents))
 
-      # Pacman is making the first move, this is done b/c of the choices skipping
+      # Pacman is starting action, this is done b/c of the choices skipping
       if currAgent == 0 and depth == 1:
         highest = max(choices)
         # Make a list of the best possible choices and choose randomly
@@ -196,17 +197,15 @@ class MinimaxAgent(MultiAgentSearchAgent):
         for i in range(len(choices)):
           if choices[i] == highest:
             bestChoices.append(i)
-        chosen = random.choice(bestChoices)
-        return legalMoves[chosen]
+        # Return a randomly selected index of the best possible options
+        return legalMoves[random.choice(bestChoices)]
         
       # If pacman is moving (not first action), return highest evaluated option
       elif currAgent == 0:
-        highest = max(choices)
-        return highest
+        return max(choices)
       # If other agent is moving, return lowest evaluated option
       else:
-        lowest = min(choices)
-        return lowest
+        return min(choices)
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -216,17 +215,92 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
           Returns the minimax action using self.depth and self.evaluationFunction
         """
-        "*** YOUR CODE HERE ***"
+        return self.pruning(gameState, 0, 0, -sys.maxint, sys.maxint)
 
+    def pruning(self, gameState, depth, currAgent, alpha, beta):
+      # If the current agent value is higher than total, reset.
+      # Also increment depth because every agent has been scanned
+      if currAgent >= gameState.getNumAgents():
+        currAgent = 0
+        depth += 1
+      
+      # If max depth is reached, return the current node
+      if depth == self.depth:
+        return self.evaluationFunction(gameState)
 
-        def maxValue(self, gameState, alpha, beta):
-        	v = -10000
+      # If pacman, do a max action
+      if currAgent == 0:
+        return self.getMax(gameState, currAgent, depth, alpha, beta)
+      # If not pacman, do a min action
+      else:
+        return self.getMin(gameState, currAgent, depth, alpha, beta)
 
-        def minValue(self, gameState, alpha, beta):
-        	v = -10000
+    def getMax(self, gameState, currAgent, depth, alpha, beta):
+      if gameState.isWin() or gameState.isLose():
+        return self.evaluationFunction(gameState)
 
-        
-        util.raiseNotDefined()
+      highest = -(sys.maxint)
+      highestAction = "None"
+      # Get all possible legal moves of the current agent
+      # legalMoves = []
+      # for legalAction in gameState.getLegalActions(currAgent):
+      #   # Stopping is inoptimal, so do not perform these
+      #   if legalAction != 'Stop':
+      #     print "FOUND IT"
+      #     legalMoves.append(legalAction)
+
+      for action in gameState.getLegalActions(currAgent):
+        if action != Directions.STOP:
+            tempVal = self.pruning(gameState.generateSuccessor(currAgent, action), 
+              depth, currAgent+1, alpha, beta)
+
+            # If the next action's value is higher than highest, update highest value
+            if tempVal > highest:
+              highest = tempVal
+              highestAction = action
+
+            if highest > beta:
+              return highest
+
+            alpha = max(alpha, highest)
+
+      if depth == 0:
+        return highestAction
+      else:
+        return highest
+
+    def getMin(self, gameState, currAgent, depth, alpha, beta):
+      if gameState.isWin() or gameState.isLose():
+        return self.evaluationFunction(gameState)
+
+      lowest = sys.maxint
+      lowestAction = "None"
+      # Get all possible legal moves of the current agent
+      # legalMoves = []
+      # for legalAction in gameState.getLegalActions(currAgent):
+      #   # Stopping is inoptimal, so do not perform these
+      #   if legalAction != 'Stop':
+      #     legalMoves.append(legalAction)
+
+      for action in gameState.getLegalActions(currAgent):
+        if action != Directions.STOP:
+          tempVal = self.pruning(gameState.generateSuccessor(currAgent, action), 
+            depth, currAgent+1, alpha, beta)
+
+          # If the next action's value is lower than lowest, update lowest value
+          if tempVal < lowest:
+            lowest = tempVal
+            lowestAction = action
+
+          # If lowest is less than alpha, return the lowest value.
+          if lowest < alpha:
+            return lowest
+
+          # Update beta with lowest value
+          beta = min(beta, lowest)
+
+      # If condition never met, return lowest
+      return lowest
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
