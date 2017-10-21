@@ -11,7 +11,6 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
 import mdp, util
 
 from learningAgents import ValueEstimationAgent
@@ -43,16 +42,42 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.iterations = iterations
         self.values = util.Counter() # A Counter is a dict with default 0
 
-        # Write value iteration code here
-        "*** YOUR CODE HERE ***"
+        """
+        python autograder.py -q q1
+        python gridworld.py -a value -i 100 -k 10
+        python gridworld.py -a value -i 5
+        """
 
+        # For every iteration specified, since range stops at self.iterations - 1
+        for x in range(0, self.iterations):
+          newIteration = util.Counter()
+          # For every state in the MDP
+          for currState in self.mdp.getStates():
+            # If the state is terminal, set equal to 0
+            if self.mdp.isTerminal(currState):
+              newIteration[currState] = 0
+            else:
+              # Set highest to -inf for initializing comparison of highest value
+              highest = float("-inf")
+              # For each possible action from the current state
+              for action in self.mdp.getPossibleActions(currState):
+                totalValue = 0
+                # 2 separate lists
+                tranStates, probs = self.mdp.getTransitionStatesAndProbs(currstate, action)
+                # Iterate through the lists together
+                for nextState, prob in tranStates, probs:
+                  # Prob * CurrReward + y*nextState's value
+                  totalValue += prob * (self.mdp.getReward(currState, action, nextState)
+                                         + self.discount*self.values[nextState])
+                highest = max(highest, totalValue)
+                newIteration[currState] = highest
+          self.values = newIteration
 
     def getValue(self, state):
         """
           Return the value of the state (computed in __init__).
         """
         return self.values[state]
-
 
     def computeQValueFromValues(self, state, action):
         """
@@ -71,8 +96,16 @@ class ValueIterationAgent(ValueEstimationAgent):
           there are no legal actions, which is the case at the
           terminal state, you should return None.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        # If terminal state, return none
+        if self.mdp.isTerminal(state):
+          return None
+
+        
+
+        highest = float("-inf")
+        for action in self.mdp.getPossibleActions(state):
+          if 
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
