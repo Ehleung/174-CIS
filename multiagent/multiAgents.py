@@ -241,16 +241,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
       highest = -(sys.maxint)
       highestAction = "None"
-      # Get all possible legal moves of the current agent
-      # legalMoves = []
-      # for legalAction in gameState.getLegalActions(currAgent):
-      #   # Stopping is inoptimal, so do not perform these
-      #   if legalAction != 'Stop':
-      #     print "FOUND IT"
-      #     legalMoves.append(legalAction)
 
       for action in gameState.getLegalActions(currAgent):
+        # Ignore actions that involve stopping
         if action != Directions.STOP:
+          # Recursive call of pruning (to determine min or max) with the next agent
             tempVal = self.pruning(gameState.generateSuccessor(currAgent, action), 
               depth, currAgent+1, alpha, beta)
 
@@ -259,13 +254,17 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
               highest = tempVal
               highestAction = action
 
+            # If the highest value is greater than beta, return it
             if highest > beta:
               return highest
 
+            # Update alpha
             alpha = max(alpha, highest)
 
+      # After the loop, if the depth is 0, return the action
       if depth == 0:
         return highestAction
+      # Otherwise, return the highest value
       else:
         return highest
 
