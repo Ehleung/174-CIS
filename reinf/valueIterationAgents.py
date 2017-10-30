@@ -62,13 +62,12 @@ class ValueIterationAgent(ValueEstimationAgent):
               # For each possible action from the current state
               for action in self.mdp.getPossibleActions(currState):
                 totalValue = 0
-                # 2 separate lists
-                tranStates, probs = self.mdp.getTransitionStatesAndProbs(currstate, action)
+                transitions = self.mdp.getTransitionStatesAndProbs(currState, action)
                 # Iterate through the lists together
-                for nextState, prob in tranStates, probs:
+                for trans in transitions:
                   # Prob * CurrReward + y*nextState's value
-                  totalValue += prob * (self.mdp.getReward(currState, action, nextState)
-                                         + self.discount*self.values[nextState])
+                  totalValue += trans[1] * (self.mdp.getReward(currState, action, trans[0])
+                                         + self.discount*self.values[trans[0]])
                 highest = max(highest, totalValue)
                 newIteration[currState] = highest
           self.values = newIteration
@@ -79,33 +78,47 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         return self.values[state]
 
+    # Computes the q-value itself, used in both computeQvaluefromvalues and computeactionfromvalues
+    def computeReward(self, state, action):
+      transitions = self.mdp.getTransitionStatesAndProbs(state, action)
+      reward = 0
+      for trans in transitions:
+        # trans[1] is the probability of that state
+        # get the reward of transitioning to the new state trans[0]
+        # get discount specified * current value of trans[0]
+        reward += trans[1]*(self.mdp.getReward(state, action, trans[0]) + self.discount*self.values[trans[0]])
+      return reward
+
     def computeQValueFromValues(self, state, action):
         """
           Compute the Q-value of action in state from the
           value function stored in self.values.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        return self.computeReward(state, action)
 
     def computeActionFromValues(self, state):
         """
           The policy is the best action in the given state
           according to the values currently stored in self.values.
-
           You may break ties any way you see fit.  Note that if
           there are no legal actions, which is the case at the
           terminal state, you should return None.
         """
-
         # If terminal state, return none
         if self.mdp.isTerminal(state):
           return None
 
-        
-
+        # highest is a value to compare the best reward.
+        # returnAction is a var to contain the action to be returned
         highest = float("-inf")
+        returnAction = None
         for action in self.mdp.getPossibleActions(state):
-          if 
+          reward = self.computeReward(state, action)
+          if reward > highest:
+            returnAction = action
+            highest = reward
+        return returnAction
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
