@@ -11,7 +11,6 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
 import numpy as np
 import tensorflow as tf
 import tensorflow_util as tfu
@@ -83,7 +82,9 @@ class GradientDescentSolver(Solver):
         grad_tensors = tf.gradients(loss_tensor, param_vars)
         updates = []
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        for param in param_vars:
+        updates.append((param, param-self.learning_rate*grad)) for param, grad in param_vars, grad_tensors
+        
         return updates
 
     def get_updates_with_momentum(self, loss_tensor, param_vars):
