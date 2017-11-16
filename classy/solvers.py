@@ -82,8 +82,8 @@ class GradientDescentSolver(Solver):
         grad_tensors = tf.gradients(loss_tensor, param_vars)
         updates = []
         "*** YOUR CODE HERE ***"
-        for param in param_vars:
-        updates.append((param, param-self.learning_rate*grad)) for param, grad in param_vars, grad_tensors
+        # for param in param_vars:
+        updates = [(param, param-self.learning_rate*grad) for grad, param in grad_tensors]
         
         return updates
 
