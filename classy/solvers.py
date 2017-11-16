@@ -81,10 +81,11 @@ class GradientDescentSolver(Solver):
         """
         grad_tensors = tf.gradients(loss_tensor, param_vars)
         updates = []
-        "*** YOUR CODE HERE ***"
-        updates = [(param, param-(self.learning_rate*grad) for param, grad in zip(param_vars, grad_tensors)]
-        #updates = [(param, param-self.learning_rate*grad) for grad, param in grad_tensors]
-    
+
+	# tuple of (param, param_tensor)
+	# param_tensor = alpha * gradient (of current index)
+        updates = [(param, param-(self.learning_rate*grad)) for param, grad in zip(param_vars, grad_tensors)]
+
         return updates
 
     def get_updates_with_momentum(self, loss_tensor, param_vars):
