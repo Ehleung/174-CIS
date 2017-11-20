@@ -37,6 +37,10 @@ def q10():
     """
     hyperparams = dict()
     "*** YOUR CODE HERE ***"
+    # Allow a very low learning rate, as we are given many iterations to utilize this accuracy
+    hyperparams['learning_rate'] = 0.01
+    # High momentum to avoid local maxima
+    hyperparams['momentum'] = 0.85
     # filter out any item in the dict that is not the learning rate nor momentum
     allowed_hyperparams = ['learning_rate', 'momentum']
     hyperparams = dict([(k, v) for (k, v) in hyperparams.items() if k in allowed_hyperparams])
