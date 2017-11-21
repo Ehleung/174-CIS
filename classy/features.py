@@ -50,12 +50,63 @@ def enhancedFeatureExtractor(datum):
     ##
     """
     features = basicFeatureExtractor(datum)
+     
+    # visited nodes
+    visited = []
+    # unique # of contiguous whitespace
+    unique = 0    
 
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    for x in range(DIGIT_DATUM_HEIGHT):
+        for y in range(DIGIT_DATUM_WIDTH):
+	    if datum[x][y] == 0:
+		# if coordinates not visited yet and is whitespace, it's new
+		if (x, y) not in visited:
+		    unique += 1
+		    # add nodes to visited based on explore function
+		    visited += explore(datum, visited, x, y)	    
 
-    return features
+    # represents how many unique contiguous whitespace components (bools)
+    enhancedFeatures = [0, 0, 0]
+    if unique == 1:
+	enhancedFeatures[0] = 1
+    elif unique == 2:
+	enhancedFeatures[1] = 1
+    elif unique > 2:
+	enhancedFeatures[2] = 1
 
+    # concatenate the flattened features (basic) with my new features
+    return np.concatenate((features, np.array(enhancedFeatures)))
+
+# used to explore all contiguous whitespace of a pixel
+def explore(datum, visited, x, y):
+    # explore nodes w/ dfs, since we know it has a limited depth
+    stack = util.Stack()
+    stack.push((x, y))
+    # list to keep track of what's been explored
+    explored = []
+
+    while not stack.isEmpty():
+	i, j = stack.pop()
+	# if the node hasn't been visited (prior run)
+	# or explored (this run), then add it, then explore it.
+	if (i, j) not in visited and (i, j) not in explored:
+	    explored.append((i, j))
+		    
+	    # find the neighbors of current location
+	    neighbors = []
+	    if i >= 1 and datum[i-1][j] == 0:
+		neighbors.append((i-1, j))
+	    if i < DIGIT_DATUM_WIDTH - 1 and datum[i+1][j] == 0:
+		neighbors.append((i+1, j))
+	    if j >= 1 and datum[i][j-1] == 0:
+		neighbors.append((i, j-1))
+	    if j < DIGIT_DATUM_HEIGHT - 1 and datum[i][j+1] == 0:
+		neighbors.append((i, j+1))
+
+	    # push neighbors onto stack
+	    for neighbor in neighbors:
+		stack.push(neighbor)
+    return explored
 
 def analysis(model, trainData, trainLabels, trainPredictions, valData, valLabels, validationPredictions):
     """
@@ -81,15 +132,15 @@ def analysis(model, trainData, trainLabels, trainPredictions, valData, valLabels
 
     # Put any code here...
     # Example of use:
-    # for i in range(len(trainPredictions)):
-    #     prediction = trainPredictions[i]
-    #     truth = trainLabels[i]
-    #     if (prediction != truth):
-    #         print "==================================="
-    #         print "Mistake on example %d" % i
-    #         print "Predicted %d; truth is %d" % (prediction, truth)
-    #         print "Image: "
-    #         print_digit(trainData[i,:])
+    #for i in range(len(trainPredictions)):
+    #    prediction = trainPredictions[i]
+    #    truth = trainLabels[i]
+    #    if (prediction != truth):
+    #        print "==================================="
+    #        print "Mistake on example %d" % i
+    #        print "Predicted %d; truth is %d" % (prediction, truth)
+    #        print "Image: "
+    #        print_digit(trainData[i,:])
 
 
 ## =====================
